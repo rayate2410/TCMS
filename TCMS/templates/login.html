@@ -1,0 +1,35 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>User Login</title>
+
+    <link rel="stylesheet" href="{% static 'assets/css/login.css' %}" media="screen" type="text/css" />
+
+</head>
+
+<body>
+  <section class="login">
+	<div class="titulo">Login</div>
+	<form action="/accounts/auth/" method="post" enctype="application/x-www-form-urlencoded">{% csrf_token %}
+    	<input id="username" name="username" type="text" required title="Username required" placeholder="Username" data-icon="U">
+        <input id="password" name="password" type="password" required title="Password required" placeholder="Password" data-icon="x">
+        <div class="olvido">
+        	<div class="col"><a href="#" title="Ver Carásteres">Register</a></div>
+            <div class="col"><a href="#" title="Recuperar Password">Fotgot Password?</a></div>
+        </div>
+        <button type="submit" id="submit" name="submit" class="enviar">Login</button>
+    </form>
+</section>
+
+</body>
+</html>
+
+</body>
+
+</html>
