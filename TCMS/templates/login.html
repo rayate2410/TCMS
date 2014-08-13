@@ -20,12 +20,13 @@
     	<input id="username" name="username" type="text" required title="Username required" placeholder="Username" data-icon="U">
         <input id="password" name="password" type="password" required title="Password required" placeholder="Password" data-icon="x">
         <div class="olvido">
-        	<div class="col"><a href="#" title="Ver Carásteres">Register</a></div>
             <div class="col"><a href="#" title="Recuperar Password">Fotgot Password?</a></div>
+           	{% block invalid_login %}
+            {% endblock %}
         </div>
         <button type="submit" id="submit" name="submit" class="enviar">Login</button>
     </form>
-</section>
+  </section>
 
 </body>
 </html>

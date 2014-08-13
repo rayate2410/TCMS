@@ -24,7 +24,6 @@ def login(request):
 def auth_view(request):
     username = request.POST.get('username','')
     password = request.POST.get('password','')
-    print username,password
     user = auth.authenticate(username=username, password=password)
     if user is not None:
         auth.login(request, user)
@@ -40,4 +39,5 @@ def invalid_login(request):
     return render_to_response('invalid_login.html')
     
 def logout(request):
+    auth.logout(request)
     return render_to_response('logout.html')
