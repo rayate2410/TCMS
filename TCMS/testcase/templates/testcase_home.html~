@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block page_header %}
+    <h1 class="page-header">
+        Test Cases
+    </h1>
+{% endblock %}
+
+{% block content %}
+    <div class="col-lg-6">
+        <h2>Select :</h2>
+        <div class="table-responsive">
+            <li>
+                <a class="collapsed" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-arrows-v"></i> Dropdown <i class="fa fa-fw fa-caret-down"></i></a>
+                    <ul style="height: 0px;" id="demo" class="collapse">
+                        <li>
+                            <a href="#">Dropdown Item</a>
+                        </li>
+                        <li>
+                            <a href="#">Dropdown Item</a>
+                        </li>
+                    </ul>
+            </li>
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>title</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                    <tr>
+                        <td><a href="">{{project.name}}</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+	
+{% endblock %}

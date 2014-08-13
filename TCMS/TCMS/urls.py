@@ -1,10 +1,12 @@
 from django.conf.urls import patterns, include, url
+from testcase import urls as testcase_urls
 
 from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
+    (r'^testcase/', include(testcase_urls)),
     (r'^$', 'TCMS.views.index'),
 	(r'^home/', 'TCMS.views.home'),
     (r'^login/$','TCMS.views.login'),
