@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% include 'execution_base.html' %}
+
+{% block content %}
+
+
+<div id="page-wrapper">
+
+            <div class="container-fluid">
+				
+                <!-- Page Heading -->
+                
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Executions
+                             
+                        </h1>
+                        
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <div class="row">
+                    
+                    
+                <div>
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+         
+        <!-- /#page-wrapper -->
+
+    </div>
+    
+   
+   
+   <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Current test executions: <b>{{ executions.count }}</b></div>
+  <div class="panel-body">
+   
+  
+
+  <!-- List group -->
+  <ul class="list-group">
+  
+  {% for execution in executions %}
+    <p><li class="list-group-item"><h3><a href="/execution/get/{{ execution.id }}/">{{execution.title}}</a>: {{ execution.status }}% Completed</h3></p>
+    <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ execution.status }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ execution.status }}%;"><span class="sr-only">0% Complete</span>
+                    </div>
+                </div>
+    </li>
+    
+  {% endfor %} 
+   </ul>
+</div>	
+</div>
+<a class="btn btn-primary" href="/execution/start/" role="button">Start New Execution</a>
+                    
+{% endblock %}
+
+
+
+

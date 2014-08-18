@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="page-wrapper">
+
+            <div class="container-fluid">
+				
+                <!-- Page Heading -->
+                
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                            {{execution.title}} <small>{{execution_history.testcase.category}}</small>
+                            
+                        </h1>
+                        
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <div class="row">
+           
+                <div>
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+         
+        <!-- /#page-wrapper -->
+
+    </div>
+    
+<table class="table table-striped">
+  <tr>
+  	<th>Title</th>
+  	<th>Steps to perform</th>
+  	<th>Expected Result</th>
+  	
+  </tr>
+  
+  <tr>
+  	<td>{{execution_history.testcase.title}}</td>
+  	<td>{{execution_history.testcase.steps}}</td>
+  	<td>{{execution_history.testcase.expected_result}}</td>
+  </tr>
+</table>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Results</h3>
+  </div>
+  <div class="panel-body">
+    <p>Result: {{execution_history.result}}</p>
+  	<p>Bug ID: {{execution_history.bugid}} </p> 
+   	<p> Comment:{{execution_history.comment}}</p>
+   	<p> Last executed by: {{execution_history.executed_by}}</p>
+  </div>
+</div>
+<form class="form-horizontal" method="POST" action="/execution/execute/{{execution.id}}/tc/{{execution_history.id}}/">
+{% csrf_token %}
+<fieldset>
+
+
+<!-- Form Name -->
+<legend>Result</legend>
+
+<!-- Select Basic -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="result">Result</label>
+  <div class="col-md-4">
+    <select id="result" name="result" class="form-control">
+      <option value="PASS">PASS</option>
+      <option value="FAIL">FAIL</option>
+      <option value="NE">Not Executed</option>
+      <option value="NAp">Not Applicable</option>
+    </select>
+  </div>
+</div>
+
+<!-- Text input-->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="bugid">Bug ID</label>  
+  <div class="col-md-4">
+  <input id="bugid" name="bugid" type="text" placeholder="bug id" class="form-control input-md">
+  <span class="help-block">If testcase is failed</span>  
+  </div>
+</div>
+
+<!-- Textarea -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="comment">Comment</label>
+  <div class="col-md-4">                     
+    <textarea class="form-control" id="comment" name="comment" placeholder="Comment (Optional)"></textarea>
+  </div>
+</div>
+
+<!-- Button -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="execute"></label>
+  <div class="col-md-4">
+    <button id="execute" name="execute" class="btn btn-primary">Execute</button>
+  </div>
+</div>
+
+</fieldset>
+</form>
+  
+<ul class="pager">
+	{% if execution_history.previous != None %}
+ 		 <li class="previous"><a href="/execution/execute/{{execution.id}}/tc/{{execution_history.previous.id}}">&larr; Previous</a></li>
+  	{% else %}
+  		 <li class="previous disabled"><a href="#">&larr; Previous</a></li>
+  	{% endif %}
+  	{% if execution_history.next != None %}
+ 		 <li class="next"><a href="/execution/execute/{{execution.id}}/tc/{{execution_history.next.id}}"> Next &rarr;</a></li>
+  	{% else %}
+  		 <li class="next disabled"><a href="#"> Next &rarr;</a></li>
+  	{% endif %}
+ 
+</ul>
+   
+                    
+{% endblock %}
+
+

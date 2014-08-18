@@ -14,6 +14,7 @@ def index(request):
 def home(request):
     c = {}
     c.update(csrf(request))
+    c['user']= request.user
     return render_to_response('dashboard.html',c)
 
 def login(request):
@@ -41,3 +42,6 @@ def invalid_login(request):
 def logout(request):
     auth.logout(request)
     return render_to_response('logout.html')
+
+def pagenotfound(request):
+    return render_to_response('page_not_found.html')

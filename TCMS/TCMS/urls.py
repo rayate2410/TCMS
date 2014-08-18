@@ -3,6 +3,7 @@ from testcase import urls as testcase_urls
 
 from django.contrib import admin
 admin.autodiscover()
+handler404 = 'TCMS.views.pagenotfound'
 
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
@@ -12,6 +13,8 @@ urlpatterns = patterns('',
     (r'^login/$','TCMS.views.login'),
     (r'^auth/$','TCMS.views.auth_view'),
     (r'^logout/$','TCMS.views.logout'),
-    (r'^loggedin/$','TCMS.views.loggedin'),
     (r'^invalid/$','TCMS.views.invalid_login'),
+
+    url(r'^project/', include('project.urls')),
+    url(r'^execution/', include('execution.urls')),
 )

@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="page-wrapper">
+
+            <div class="container-fluid">
+				
+                <!-- Page Heading -->
+                
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                            {{execution.title}} 
+                        </h1>
+                        
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <div class="row">
+                    
+                    
+                <div>
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+         
+        <!-- /#page-wrapper -->
+
+    </div>
+    
+   <div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Execution Title</h3>
+  </div>
+  <div class="panel-body">
+    {{execution.title}}
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Created by</h3>
+  </div>
+  <div class="panel-body">
+    {{execution.started_by}} - {{execution.started_by.email}} 
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Description</h3>
+  </div>
+  <div class="panel-body">
+    {{execution.description}}
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">On Version</h3>
+  </div>
+  <div class="panel-body">
+    {{execution.version}}
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Started On</h3>
+  </div>
+  <div class="panel-body">
+    {{execution.start_date}}
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Total no. of Testcases</h3>
+  </div>
+  <div class="panel-body">
+    {{execution.executionhistory_set.count }}
+  </div>
+</div>
+
+<!--  <div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Categories included</h3>
+  </div>
+  <div class="panel-body">
+  	{% if execution.execution_history > 0  %}
+	    <ul class="list-group">
+	    	{% for category in categories %}
+	    		<li class="list-group-item">{{ category.name }} -- {{category.description}} </li>
+	    	{% endfor %}
+	  	</ul>
+	{% else %}
+		<div class="panel-body">
+    		No Categories found!!
+  		</div>
+  	{% endif %}
+  	<a class="btn btn-primary" href="/project/{{ project.id }}/category/add/" role="button">Add New Category</a>
+  </div>
+</div>-->
+  
+{% with execution.executionhistory_set.all|first as first %}
+	
+<a class="btn btn-primary" href="/execution/execute/{{ execution.id }}/tc/{{ first.id }}" role="button">Start Executing</a>
+ 
+ {% endwith %}                   
+{% endblock %}
+
+
