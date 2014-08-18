@@ -79,9 +79,21 @@ def execute(request, ex_id, eh_id):
                 execution_history.comment = comment
         
         execution_history.result = result
-        print request.user
+        #print request.user
         execution_history.executed_by = request.user
         execution_history.save()
+        
+        # Calculate execution status.
+        total_tc = execution.executionhistory_set.count()
+        passed_tc = execution.executionhistory_set.filter(result='PASS').count()
+        failed_tc = execution.executionhistory_set.filter(result='FAIL').count()
+        nap_tc = execution.executionhistory_set.filter(result='NAp').count()
+        execution_status = ( (passed_tc + failed_tc + nap_tc)/total_tc ) * 100
+        
+        #print execution_status 
+        
+        execution.status = execution_status
+        execution.save()
           
         return render_to_response('execution.html', args)
 
