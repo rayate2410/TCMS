@@ -1,8 +1,10 @@
+from __future__ import division
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
 from models import Execution,ExecutionHistory
 from project.models import Project, Category
 from django.http import HttpResponseRedirect
+
 import time
 from testcase.models import TestCase
 
@@ -24,7 +26,7 @@ def start_execution(request):
     args['active'] = 'active'
     
     if request.POST:
-        print "post"
+        #print "post"
         title = request.POST['title']
         version = request.POST['version']
         project = Project.objects.get(id=request.POST['project'])
@@ -88,11 +90,15 @@ def execute(request, ex_id, eh_id):
         passed_tc = execution.executionhistory_set.filter(result='PASS').count()
         failed_tc = execution.executionhistory_set.filter(result='FAIL').count()
         nap_tc = execution.executionhistory_set.filter(result='NAp').count()
+        
+        
+        
         execution_status = ( (passed_tc + failed_tc + nap_tc)/total_tc ) * 100
         
         #print execution_status 
         
         execution.status = execution_status
+        
         execution.save()
           
         return render_to_response('execution.html', args)

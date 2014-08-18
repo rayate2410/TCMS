@@ -45,12 +45,48 @@
   <!-- List group -->
   <ul class="list-group">
   
-  {% for execution in executions %}
-    <p><li class="list-group-item"><h3><a href="/execution/get/{{ execution.id }}/">{{execution.title}}</a>: {{ execution.status }}% Completed</h3></p>
+{% for execution in executions %}
+   <p><li class="list-group-item"><h3><a href="/execution/get/{{ execution.id }}/">{{execution.title}}</a>: {{ execution.status }}% Completed, Total Testcases: {{ execution.executionhistory_set.count }}, Passed: {{ execution.passed }}, Failed: {{ execution.failed }}</h3></p>
+   
+   <div class="progress">
+  <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="{{ execution.status }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ execution.status }}%">
+    Overall Progress: {{ execution.status }}%
+  </div>
+</div>
+    
+<!--    
+    <script>
+		var passed_per = ( "{{execution.passed}}" / "{{ execution.executionhistory_set.count }}" ) * 100
+		var failed_per = ( "{{execution.failed}}" / "{{ execution.executionhistory_set.count }}" ) * 100
+		var nap_per = ( "{{execution.nap}}" / "{{ execution.executionhistory_set.count }}" ) * 100
+		
+		$(function(){
+			$("#passed").css({
+				width: passed_per+"%"
+			});
+			$("#failed").css({
+				width: failed_per+"%"
+			});
+			$("#nap").css({
+				width: nap_per+"%"
+			});
+		});
+		//document.getElementById("failed_per").innerHTML = failed_per;
+		//document.getElementById("nap_per").innerHTML = nap_per;
+	 
+	</script>
     <div class="progress">
-                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ execution.status }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ execution.status }}%;"><span class="sr-only">0% Complete</span>
+                    <div id="passed" class="progress-bar progress-bar-success" >Passed</span>
                     </div>
-                </div>
+                    <div id="failed" class="progress-bar progress-bar-danger" >Failed</span>
+                    </div>
+                    <div id="nap" class="progress-bar progress-bar-warning" >Not Applicable</span>
+                    </div>
+     </div>
+     
+     -->
+     
+     
     </li>
     
   {% endfor %} 
@@ -58,6 +94,8 @@
 </div>	
 </div>
 <a class="btn btn-primary" href="/execution/start/" role="button">Start New Execution</a>
+
+
                     
 {% endblock %}
 
