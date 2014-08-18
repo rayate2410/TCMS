@@ -3,19 +3,22 @@ from django.http import HttpResponseRedirect
 from django.contrib import auth
 from django.core.context_processors import csrf
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.template import RequestContext
 
 
 def index(request):
     c = {}
     c.update(csrf(request))
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('/home')
     return HttpResponseRedirect('/login')
 
 @login_required
 def home(request):
     c = {}
     c.update(csrf(request))
-    c['user']= request.user
-    return render_to_response('dashboard.html',c)
+    return render_to_response('dashboard.html',c,context_instance=RequestContext(request))
 
 def login(request):
     c = {}

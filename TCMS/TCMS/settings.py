@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'TCMS',
     'testcase',
     'execution',
+    'south',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -98,6 +99,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
 	('assets',os.path.join(BASE_DIR, 'static')),
+    ('assets',os.path.join(BASE_DIR, 'testcase/static')),
 )
 
 
