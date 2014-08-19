@@ -2,12 +2,47 @@
 {% block page_title %} TCMS | TestCases {% endblock %}
 {% block page_header %}
     <h1 class="page-header">
-        Add Test Cases
+        Add TestCase
     </h1>
 {% endblock %}
 {% block content %}
-	<form role="form">
-	  <button type="submit" class="btn btn-default">Add</button>
-	</form>
+	
+
+                        <form role="form" action="/testcase/add/" method="post">{% csrf_token %}
+                            <div class="form-group">
+                                <label>Project</label>
+                                <select id="project" name="project" class="form-control">
+                                    <option>Satellite</option>
+                                    <option>Phoenix</option>
+                                    <option>Onrule</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="category" name="category" class="form-control">
+                                    <option>Web UI</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Summary</label>
+                                <input id="title" name="title" class="form-control">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Steps for execution</label>
+                                <textarea id="steps" name="steps" class="form-control" rows="3"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Expected Result</label>
+                                <textarea id="expected_result" name="expected_result" class="form-control" rows="3"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-default">Submit Button</button>
+                            <button type="reset" class="btn btn-default">Reset Button</button>
+
+                        </form>
 
 {% endblock %}

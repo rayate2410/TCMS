@@ -40,7 +40,9 @@ def loggedin(request):
                               {'full_name' : request.user.username})
 
 def invalid_login(request):
-    return render_to_response('invalid_login.html')
+    c = {}
+    c.update(csrf(request))
+    return render_to_response('invalid_login.html',c)
     
 def logout(request):
     auth.logout(request)

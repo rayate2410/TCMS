@@ -42,6 +42,8 @@ def load_testcases(request):
                               {'testcases' : testcases })
     
 def add_testcase(request):
+    if request.method == "POST":
+        print request
     c = {}
     c.update(csrf(request))
     return render_to_response('add_testcase.html',
