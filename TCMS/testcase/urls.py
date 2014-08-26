@@ -5,4 +5,5 @@ urlpatterns = patterns('',
     (r'^load_category/$', 'testcase.views.load_category'),
     (r'^load_testcases/$', 'testcase.views.load_testcases'),
     (r'^add/$', 'testcase.views.add_testcase'),
+    (r'^import/$', 'testcase.views.import_testcases'),
 )

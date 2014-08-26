@@ -18,7 +18,26 @@ class TestCase(django_models.Model):
     def __unicode__(self):
         return self.title
 
-    
+	def filter(self, pid, **kwargs):
+        project = Project.objects.get(id=pid)
+        
+        by = kwargs.get('by','all')
+        title = kwargs.get('title','')
+        
+        if by == "all":
+            testcases = project.testcase_set.all()
+        elif by == "category":
+            cid = kwargs.get('cid','')
+            if title == "":
+                category = project.category_set.get(id=cid)
+                testcases = category.testcase_set.all()
+            else:
+                category = project.category_set.get(id=cid)
+                testcases = category.testcase_set.filter(title)
+        else:
+            testcases = project.testcase_set.filter(title)
+        return testcases
+            
 
 class TestcaseHistory(django_models.Model):
     testcase = django_models.ForeignKey(TestCase)

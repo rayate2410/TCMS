@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'testcase',
     'execution',
     'south',
+    'batchimport',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -106,3 +107,5 @@ STATICFILES_DIRS = (
 LOGIN_URL = '/'
 
 LOGOUT_URL = '/logout'
+
+BATCHIMPORT_TEMPDIR = '/tmp/'
