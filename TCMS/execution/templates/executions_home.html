@@ -12,11 +12,15 @@
                 
                 <div class="row">
                     <div class="col-lg-12">
-                        <h1 class="page-header">Executions
+                        <h1 class="page-header">Current Test Plans
                              
                         </h1>
                         
                     </div>
+                    <ol class="breadcrumb">
+						  <li><a href="/">Home</a></li>
+						  <li class="active">Test Plans</li>
+					</ol>
                 </div>
                 <!-- /.row -->
 
@@ -37,7 +41,7 @@
    
    <div class="panel panel-default">
   <!-- Default panel contents -->
-  <div class="panel-heading">Current test executions: <b>{{ executions.count }}</b></div>
+  <div class="panel-heading">Current test plans: <b>{{ executions.count }}</b></div>
   <div class="panel-body">
    
   
@@ -45,55 +49,23 @@
   <!-- List group -->
   <ul class="list-group">
   
-{% for execution in executions %}
-   <p><li class="list-group-item"><h3><a href="/execution/get/{{ execution.id }}/">{{execution.title}}</a>: {{ execution.status }}% Completed, Total Testcases: {{ execution.executionhistory_set.count }}, Passed: {{ execution.passed }}, Failed: {{ execution.failed }}</h3></p>
+{% for test_plan in testplans %}
+   <p><li class="list-group-item"><h3><a href="/execution/get/{{ test_plan.id }}/">{{test_plan.title}}</a></p></h3>   
+   <h4>Started On: {{test_plan.start_date}}</h4>
    
    <div class="progress">
   <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="{{ execution.status }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ execution.status }}%">
     Overall Progress: {{ execution.status }}%
   </div>
-</div>
+	</div>
     
-<!--    
-    <script>
-		var passed_per = ( "{{execution.passed}}" / "{{ execution.executionhistory_set.count }}" ) * 100
-		var failed_per = ( "{{execution.failed}}" / "{{ execution.executionhistory_set.count }}" ) * 100
-		var nap_per = ( "{{execution.nap}}" / "{{ execution.executionhistory_set.count }}" ) * 100
-		
-		$(function(){
-			$("#passed").css({
-				width: passed_per+"%"
-			});
-			$("#failed").css({
-				width: failed_per+"%"
-			});
-			$("#nap").css({
-				width: nap_per+"%"
-			});
-		});
-		//document.getElementById("failed_per").innerHTML = failed_per;
-		//document.getElementById("nap_per").innerHTML = nap_per;
-	 
-	</script>
-    <div class="progress">
-                    <div id="passed" class="progress-bar progress-bar-success" >Passed</span>
-                    </div>
-                    <div id="failed" class="progress-bar progress-bar-danger" >Failed</span>
-                    </div>
-                    <div id="nap" class="progress-bar progress-bar-warning" >Not Applicable</span>
-                    </div>
-     </div>
-     
-     -->
-     
-     
     </li>
     
-  {% endfor %} 
+{% endfor %} 
    </ul>
 </div>	
 </div>
-<a class="btn btn-primary" href="/execution/start/" role="button">Start New Execution</a>
+<a class="btn btn-primary" href="/execution/start/" role="button">Create New Test Plan</a>
 
 
                     

@@ -11,5 +11,7 @@ urlpatterns = patterns('',
     #url(r'^(?P<p_id>\d+)/category/add/$', exec_views.add_category),
     url(r'^execute/(?P<ex_id>\d+)/tc/(?P<eh_id>\d+)/$', exec_views.execute),
     
-   
+    url(r'^get/(?P<ex_id>\d+)/filter/$', exec_views.filtered_data),
+    url(r'^get/(?P<tp_id>\d+)/allocate/$', exec_views.allocate_task),
+    
 )

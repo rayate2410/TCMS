@@ -4,6 +4,7 @@ from testcase import urls as testcase_urls
 from django.contrib import admin
 admin.autodiscover()
 handler404 = 'TCMS.views.pagenotfound'
+handler403 = 'TCMS.views.notauthorized'
 
 urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),

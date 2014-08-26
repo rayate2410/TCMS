@@ -16,7 +16,12 @@
                              <small>All projects</small>
                         </h1>
                         
+                        
                     </div>
+                    <ol class="breadcrumb">
+						  <li><a href="/">Home</a></li>
+						  <li class="active">Projects</li>
+					</ol>
                 </div>
                 <!-- /.row -->
 
@@ -37,7 +42,7 @@
    
    <div class="panel panel-default">
   <!-- Default panel contents -->
-  <div class="panel-heading">All added projects</div>
+  <div class="panel-heading">Current projects</div>
   <div class="panel-body">
     <p><b>Total projects: {{ projects.count }}</b></p>
   </div>
@@ -51,7 +56,7 @@
   {% endfor %} 
    </ul>
 </div>
-<a class="btn btn-primary" href="/project/add/" role="button">Add New</a>
+<!--  <a class="btn btn-primary" href="/project/add/" role="button">Add New</a>-->
                     
 {% endblock %}
 

@@ -1,17 +1,17 @@
 from django.shortcuts import render_to_response
 from django.contrib.auth.decorators import login_required
-from models import Project,Category
-from forms import ProjectForm
+from models import Project,Category,Build
 from django.http import HttpResponseRedirect
 from django.utils import simplejson
 from django.http.response import HttpResponse
 from django.core.context_processors import csrf
+from django.core.exceptions import PermissionDenied
 
 # Project views are here.
 
 @login_required(login_url='/login')
 def index(request):
-    projects = Project.objects.all()
+    projects = Project.objects.filter(is_active=True)
     return render_to_response('project_home.html', {'projects' : projects, 'active':"active"})
    
 @login_required(login_url='/login')
@@ -23,26 +23,32 @@ def get_project_detail(request,p_id=1):
 
 @login_required(login_url='/login')
 def add_project(request):
-    args = {}
-    args.update(csrf(request))
-    args['active'] = 'active'
     
-    if request.POST:
-        proj_name = request.POST['proj_name']
-        proj_desc = request.POST['proj_desc']
-        
-        if Project.objects.filter(name = proj_name):
-            args['message'] = 'Same project already exists.'
-            return render_to_response('add_project.html', args)
-        else:
-            project = Project(name = proj_name, description = proj_desc)
-            project.save()
-            print project.id   
-            return HttpResponseRedirect('/project/get/'+str(project.id)+'/')
-        
+    if request.user.groups.all()[0].name not in ["admin","qa_lead"]:
+        raise PermissionDenied
     else:
         
-        return render_to_response('add_project.html', args)
+        
+        args = {}
+        args.update(csrf(request))
+        args['active'] = 'active'
+        
+        if request.POST:
+            proj_name = request.POST['proj_name']
+            proj_desc = request.POST['proj_desc']
+            
+            if Project.objects.filter(name = proj_name):
+                args['message'] = 'Same project already exists.'
+                return render_to_response('add_project.html', args)
+            else:
+                project = Project(name = proj_name, description = proj_desc)
+                project.save()
+                print project.id   
+                return HttpResponseRedirect('/project/get/'+str(project.id)+'/')
+            
+        else:
+            
+            return render_to_response('add_project.html', args)
 
 @login_required(login_url='/login')
 def add_category(request, p_id):
@@ -81,4 +87,22 @@ def get_project_category(request):
                     mimetype="application/json") 
         
         
+
+def get_build_details(request):
+    build_id = request.GET['build']
+    build = Build.objects.get(id = build_id)
     
+    data = {"id": build.id,"project" : build.project.name, "description": build.description}
+    return HttpResponse(simplejson.dumps(data, indent=4), mimetype="application/json") 
+
+def get_builds(request):
+    project_id = request.GET['project']
+    data = []
+    if Project.objects.get(id=project_id):
+        project = Project.objects.get(id=project_id)
+        
+        for build in project.build_set.all():
+            data.append({ "id": build.id, "version": build.version })
+                      
+    return HttpResponse(simplejson.dumps(data, indent=4), 
+                    mimetype="application/json") 

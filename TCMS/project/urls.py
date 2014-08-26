@@ -11,6 +11,8 @@ urlpatterns = patterns('',
     url(r'^(?P<p_id>\d+)/category/add/$', proj_views.add_category),
     
     url(r'^getProjectCategory.psp$', proj_views.get_project_category),
+    url(r'^getBuildDetails.psp$', proj_views.get_build_details),
+    url(r'^getBuilds.psp$', proj_views.get_builds),
     
    
 )
