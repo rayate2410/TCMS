@@ -1,9 +1,11 @@
 from django.conf.urls import patterns, include, url
 
-urlpatterns = patterns('',
-    (r'^$', 'testcase.views.home'),
-    (r'^load_category/$', 'testcase.views.load_category'),
-    (r'^load_testcases/$', 'testcase.views.load_testcases'),
-    (r'^add/$', 'testcase.views.add_testcase'),
-    (r'^import/$', 'testcase.views.import_testcases'),
+urlpatterns = patterns('testcase.views',
+    (r'^$', 'home'),
+    (r'^load_category/$', 'load_category'),
+    (r'^load_testcases/$', 'load_testcases'),
+    (r'^add/$', 'add_testcase'),
+    (r'^import/$', 'import_testcases'),
+    (r'^edit/$', 'edit_testcase'),
+    (r'^delete/$', 'delete_testcase'),
 )

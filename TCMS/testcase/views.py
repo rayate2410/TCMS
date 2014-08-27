@@ -6,7 +6,8 @@ from project.models import Category
 from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.core.context_processors import csrf
-from testcase import parser
+from testcase.helper import Helper
+from testcase.forms import UploadFileForm
 
 tc = TestCase()
 
@@ -42,16 +43,20 @@ def load_testcases(request):
 def add_testcase(request):
     message = ""
     if request.method == "POST":
-        req = request.POST
-        project = Project.objects.get(pid=req['project'])
-        req['project'] = project 
-        req['category'] = project.category_set.get(cid=req['category'])
-        req['last_modified_by'] = request.user
-        test_case = TestCase(req)
+        project = Project.objects.get(id=request.POST['project'])
+        category= project.category_set.get(id=request.POST['category'])
+        title = request.POST['title']
+        steps = request.POST['steps']
+        expected_result = request.POST['expected_result']
+        test_case = TestCase(project=project,category=category,
+                             title=title, steps=steps, created_by=request.user,
+                             expected_result=expected_result)
         try:
             test_case.save()
             message = "Testcase has been added successfully"
         except:
+            import sys
+            print sys.exc_info()
             message = "Failed to add testcase"
         
     c = {}
@@ -63,25 +68,38 @@ def add_testcase(request):
                               c, context_instance=RequestContext(request))
 
 def import_testcases(request):
-    message = ""
+    failure_count = 0
     if request.method == "POST":
         cid = request.POST['category']
         pid = request.POST['project']
         project = Project.objects.get(id=pid)
         category = project.category_set.get(id=cid)
-        file_path = request.POST['file']
-        xls_parser = parser.ParseXls()
-        
-
-        try:
-            message = "Testcases have been imported successfully"
-        except:
-            message = "Failed to import testcases"
+        helper = Helper()
+        data = helper.parse_xls(request.FILES)
+        print data
+        for tc in data:
+            #print tc
+            test_case = TestCase(project=project,category=category,
+                             created_by=request.user,
+                             title=tc['title'], steps=tc['steps'],
+                             expected_result=tc['expected_result']
+                             )
+            try:
+                test_case.save()
+            except:
+                failure_count += 1
+                continue
         
     c = {}
     c.update(csrf(request))
     projects = Project.objects.all()
     c['projects'] = projects
-    c['message'] = message
+    c['failure_count'] = failure_count
     return render_to_response('import_testcases.html',
                               c, context_instance=RequestContext(request))
+    
+def delete_testcase(request):
+    pass
+
+def edit_testcase(request):
+    pass

@@ -1,5 +1,5 @@
 {% block load_category %}
     {% for category in categories %}
-		<option>{{category.name}}</option>
+		<option value={{category.id}}>{{category.name}}</option>
 	{% endfor %}
 {% endblock %}

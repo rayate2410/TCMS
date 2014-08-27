@@ -1,3 +1,7 @@
+$(document).ready(function(){
+    $('#table_testcase').dataTable();
+});
+
 $(window).load(function(){
 	load_categories();
 });
@@ -8,7 +12,7 @@ function load_categories(){
 		type: "POST",
 			url : "/testcase/load_category/",
 			data : {
-				'p_name' : $("#p_name").val(),
+				'p_name' : $("#project").val(),
 				'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
 			},
 			success : render_categories,
@@ -18,7 +22,7 @@ function load_categories(){
 
 function render_categories(data, textStatus, jqXHR)
 {
-	$('#load_category').html(data);
+	$('#category').html(data);
 	load_testcases();
 }
 
@@ -27,8 +31,8 @@ function load_testcases(){
 		type: "POST",
 			url : "/testcase/load_testcases/",
 			data : {
-				'p_name' : $("#p_name").val(),
-				'c_name' : $("#load_category").val(),
+				'p_name' : $("#project").val(),
+				'c_name' : $("#category").val(),
 				'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
 			},
 			success : render_testcases,
