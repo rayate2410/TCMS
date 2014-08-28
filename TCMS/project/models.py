@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Project Models.
 
 class Project(models.Model):
@@ -27,6 +28,9 @@ class Build(models.Model):
     
     def __unicode__(self):
         return self.version
+    
+    
+       
     
 class ClientDevice(models.Model):
     project = models.ForeignKey(Project)

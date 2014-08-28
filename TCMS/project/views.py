@@ -6,6 +6,8 @@ from django.utils import simplejson
 from django.http.response import HttpResponse
 from django.core.context_processors import csrf
 from django.core.exceptions import PermissionDenied
+from django.db.models import Max
+from django.contrib.comments.feeds import LatestCommentFeed
 
 # Project views are here.
 
@@ -16,10 +18,20 @@ def index(request):
    
 @login_required(login_url='/login')
 def get_project_detail(request,p_id=1):
+    args = {}
+    args.update(csrf(request))
+    
     project = Project.objects.get(id=p_id)
     categories = project.category_set.all()
-   
-    return render_to_response('project_detail.html', {'project': project, 'categories': categories, 'active':'active'})
+    latest_version = Build.objects.all().aggregate(Max('version'))
+    latest_version = Build.objects.get(version = latest_version['version__max'])
+    
+    args['project'] = project
+    args['categories'] = categories
+    args['latest_version'] = latest_version
+    
+    
+    return render_to_response('project_detail.html', args)
 
 @login_required(login_url='/login')
 def add_project(request):
@@ -106,3 +118,21 @@ def get_builds(request):
                       
     return HttpResponse(simplejson.dumps(data, indent=4), 
                     mimetype="application/json") 
+    
+
+def add_build(request, p_id):
+    project = Project.objects.get(id=p_id)
+    if request.POST:
+        version = request.POST['version']
+        description = request.POST['description']
+        
+        new_build = Build(version=version, description=description, project = project)
+        
+        new_build.save()
+        return HttpResponseRedirect('/project/get/'+str(project.id)+'/')
+        
+    else:
+        
+        raise PermissionDenied
+    
+    

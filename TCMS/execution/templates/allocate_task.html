@@ -4,7 +4,7 @@
 {% block content %}
 
 
-
+<div id="page-wrapper" class = "col-lg-12">
 
             <div class="container-fluid">
 				
@@ -108,29 +108,31 @@
   </div>
 </div>
 
-<!-- Select Basic -->
+
+<!-- Select Multiple -->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="client_device">Client Device</label>
+  <label class="col-md-4 control-label" for="client_device">Select Device</label>
   <div class="col-md-5">
     <select id="client_device" name="client_device" class="form-control">
-    {% for client_device in client_devices %}
-      <option value="{{client_device.id}}">{{client_device.client_device}} - {{client_device.operating_system}}</option>
-    {% endfor %}
+      {% for client_device in client_devices %}
+      	<option value="{{client_device.id}}">{{client_device.client_device}} - {{client_device.operating_system}}</option>
+      {% endfor %}
     </select>
   </div>
 </div>
 
-<!-- Select Basic -->
+<!-- Select Multiple -->
 <div class="form-group">
-  <label class="col-md-4 control-label" for="browser">Browser</label>
+  <label class="col-md-4 control-label" for="browsers">Select Browsers</label>
   <div class="col-md-5">
-    <select id="browser" name="browser" class="form-control">
-      {% for browser in browsers %}
+    <select id="browsers" name="browsers" class="form-control" multiple="multiple">
+     {% for browser in browsers %}
       <option value="{{browser.id}}">{{browser.browser}}</option>
-    {% endfor %}
+     {% endfor %}
     </select>
   </div>
 </div>
+
 
 <!-- Button -->
 <div class="form-group">

@@ -12,14 +12,14 @@ class TestCase(django_models.Model):
     expected_result = django_models.TextField()
     creation_date = django_models.DateTimeField('Date Created',auto_now_add=True)
     created_by = django_models.ForeignKey(User)
-    is_automated = django_models.BooleanField()
-    status = django_models.CharField(max_length=10)
+    is_automated = django_models.BooleanField(default=False)
+    status = django_models.CharField(max_length=10, default='NE')
     
     def __unicode__(self):
         return self.title
-
-	def filter(self, pid, **kwargs):
-        project = Project.objects.get(id=pid)
+    
+    def filter(self, pid, **kwargs):
+        project = project_models.Project.objects.get(id=pid)
         
         by = kwargs.get('by','all')
         title = kwargs.get('title','')

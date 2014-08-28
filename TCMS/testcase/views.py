@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.template import RequestContext
 from django.core.context_processors import csrf
 from testcase.helper import Helper
-from testcase.forms import UploadFileForm
+
 
 tc = TestCase()
 

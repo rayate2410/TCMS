@@ -25,7 +25,19 @@ class ExecutionTask(django_models.Model):
     start_date = django_models.DateTimeField("Date", auto_now_add=True)
     status = django_models.IntegerField(default=0)
     client_device = django_models.ForeignKey(project_models.ClientDevice)
-    browser = django_models.ForeignKey(project_models.Browser)    
+    browsers = django_models.CharField(max_length=200, null=True, blank=True)    
+    
+    def __unicode__(self):
+        return self.title
+    
+    def passed(self):
+        return self.executionhistory_set.filter(result = 'PASS').count()
+    
+    def failed(self):
+        return self.executionhistory_set.filter(result = 'FAIL').count()
+    
+    def nap(self):
+        return self.executionhistory_set.filter(result = 'NAp').count()
     
 
 '''

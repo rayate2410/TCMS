@@ -5,6 +5,7 @@ from models import TestPlan, ExecutionHistory, ExecutionTask
 from project.models import Project, Category, Build, Browser, ClientDevice
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
+from testcase.models import TestCase, TestcaseHistory
 
 import time
 from testcase.models import TestCase
@@ -42,22 +43,22 @@ def start_execution(request):
         return render_to_response('start_execution.html', args)
 
 
-def get_execution_detail(request, ex_id):
-    execution = TestPlan.objects.get(id = ex_id)
-    execution_history = execution.executionhistory_set.all()
-    categories =  execution.executionhistory_set.values('testcase__category__name').distinct()
+def get_execution_detail(request, tp_id):
+    testplan = TestPlan.objects.get(id = tp_id)
+    execution_tasks = testplan.executiontask_set.all()
+    #categories =  execution.executionhistory_set.values('testcase__category__name').distinct()
     
-    return render_to_response('execution_detail.html', {'execution': execution,'execution_history': execution_history, 'active':'active', 'categories':categories})
+    return render_to_response('testplan_task_list.html', {'testplan': testplan,'execution_tasks': execution_tasks, 'active':'active'})
 
-def execute(request, ex_id, eh_id):
+def execute(request, et_id):
     args = {}
     args.update(csrf(request))
-    execution = TestPlan.objects.get(id = ex_id)
-    execution_history = execution.executionhistory_set.get(id=eh_id)
-    args['execution'] = execution
-    args['execution_history'] = execution_history
-   
+    execution_task = ExecutionTask.objects.get(id = et_id)
     
+    args['execution_task'] = execution_task
+    
+   
+    '''
     if request.POST:
         
         result = request.POST['result']
@@ -81,10 +82,10 @@ def execute(request, ex_id, eh_id):
         execution_history.save()
         
         # Calculate execution status.
-        total_tc = execution.executionhistory_set.count()
-        passed_tc = execution.executionhistory_set.filter(result='PASS').count()
-        failed_tc = execution.executionhistory_set.filter(result='FAIL').count()
-        nap_tc = execution.executionhistory_set.filter(result='NAp').count()
+        total_tc = execution_task.executionhistory_set.count()
+        passed_tc = execution_task.executionhistory_set.filter(result='PASS').count()
+        failed_tc = execution_task.executionhistory_set.filter(result='FAIL').count()
+        nap_tc = execution_task.executionhistory_set.filter(result='NAp').count()
         
         
         
@@ -92,15 +93,17 @@ def execute(request, ex_id, eh_id):
         
         #print execution_status 
         
-        execution.status = execution_status
+        execution_task.status = execution_status
         
-        execution.save()
+        execution_task.save()
           
         return render_to_response('execution.html', args)
 
         
     else:
         return render_to_response('execution.html', args)
+    '''
+    return render_to_response('execution.html', args)
     
 
 
@@ -163,20 +166,53 @@ def allocate_task(request, tp_id):
     
     
     if request.POST:
-        print "POST"
+        
         title = request.POST['title']
         description = request.POST['description']
         allocate_to = User.objects.get(id=request.POST['allocate_to'])
         client_device = ClientDevice.objects.get(id=request.POST['client_device'])
-        browser = Browser.objects.get(id=request.POST['browser'])
+        browsers = request.POST.getlist('browsers')
+        browser_name = ''
+        for browser in browsers:
+            browser_name = browser_name + ',' + browser
+                              
+        browser_name =  browser_name[1:]
         category = Category.objects.get(id=request.POST['category'])
         
-        execution_task = ExecutionTask(testplan = testplan, title = title, description = description, allocated_to = allocate_to, allocated_by = request.user,client_device = client_device, browser = browser, category=category)
+        execution_task = ExecutionTask(testplan = testplan, title = title,
+                                       description = description,
+                                       allocated_to = allocate_to,
+                                       allocated_by = request.user,
+                                       client_device = client_device,
+                                       browsers = browser_name, category=category)
         execution_task.save()
         
-        return HttpResponseRedirect("/execution/")
+        
+        testcases = TestCase.objects.filter(category = category)
+        
+        for testcase in testcases:
+            execution_history =  ExecutionHistory(execution = execution_task, testcase = testcase)
+            execution_history.save()
+        
+        return HttpResponseRedirect("/execution/get/"+str(tp_id)+"/")
         
     else:
         return render_to_response('allocate_task.html', args)
+    
+def get_task_detail(request, tp_id, et_id):
+    testplan = TestPlan.objects.get(id = tp_id)
+    execution_task = ExecutionTask.objects.get(id = et_id)
+    #categories =  execution.executionhistory_set.values('testcase__category__name').distinct()
+    
+    return render_to_response('task_detail.html', {'testplan': testplan,'execution_task': execution_task, 'active':'active'})
+
+def task_testcases(request, tp_id, et_id):
+    testplan = TestPlan.objects.get(id = tp_id)
+    execution_task = ExecutionTask.objects.get(id = et_id)
+    execution_history = execution_task.executionhistory_set.all()
+    
+    return render_to_response('task_testcases.html', {'testplan': testplan,'execution_task': execution_task, 'execution_history':execution_history, 'active':'active'})
+    
+    
     
 
