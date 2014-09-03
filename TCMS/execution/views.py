@@ -6,18 +6,28 @@ from project.models import Project, Category, Build, Browser, ClientDevice
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from testcase.models import TestCase, TestcaseHistory
+from django.template import RequestContext
 
 import time
 from testcase.models import TestCase
 
 from django.http.response import HttpResponse
 from django.core.context_processors import csrf
+from django.views.decorators.csrf import csrf_exempt
+
+import json
 
 
 # Create your views here.
 def index(request):
     testplans = TestPlan.objects.all()
-    return render_to_response('executions_home.html', {'testplans' : testplans, 'active':'active'})
+    dict_obj = []
+    for testplan in testplans:
+        #print get_testplan_status(testplan.id)
+        dict_obj.append({'testplan':testplan, 'status':get_testplan_status(testplan.id)})
+    
+    
+    return render_to_response('executions_home.html', {'testplans' : testplans, 'dict_obj': dict_obj,'active':'active'}, context_instance=RequestContext(request))
     
 def start_execution(request):
     args = {}
@@ -48,7 +58,7 @@ def get_execution_detail(request, tp_id):
     execution_tasks = testplan.executiontask_set.all()
     #categories =  execution.executionhistory_set.values('testcase__category__name').distinct()
     
-    return render_to_response('testplan_task_list.html', {'testplan': testplan,'execution_tasks': execution_tasks, 'active':'active'})
+    return render_to_response('testplan_task_list.html', {'testplan': testplan,'execution_tasks': execution_tasks, 'active':'active'}, context_instance=RequestContext(request))
 
 def execute(request, et_id):
     args = {}
@@ -103,7 +113,7 @@ def execute(request, et_id):
     else:
         return render_to_response('execution.html', args)
     '''
-    return render_to_response('execution.html', args)
+    return render_to_response('execution.html', args, context_instance=RequestContext(request))
     
 
 
@@ -153,7 +163,7 @@ def filtered_data(request, ex_id):
     
     
     args['filter_by'] = by
-    return render_to_response('execution_filter.html', args)
+    return render_to_response('execution_filter.html', args, context_instance=RequestContext(request))
 
 def allocate_task(request, tp_id):
     args = {}
@@ -197,21 +207,140 @@ def allocate_task(request, tp_id):
         return HttpResponseRedirect("/execution/get/"+str(tp_id)+"/")
         
     else:
-        return render_to_response('allocate_task.html', args)
+        return render_to_response('allocate_task.html', args, context_instance=RequestContext(request))
     
 def get_task_detail(request, tp_id, et_id):
     testplan = TestPlan.objects.get(id = tp_id)
     execution_task = ExecutionTask.objects.get(id = et_id)
     #categories =  execution.executionhistory_set.values('testcase__category__name').distinct()
     
-    return render_to_response('task_detail.html', {'testplan': testplan,'execution_task': execution_task, 'active':'active'})
+    return render_to_response('task_detail.html', {'testplan': testplan,'execution_task': execution_task, 'active':'active'}, context_instance=RequestContext(request))
 
 def task_testcases(request, tp_id, et_id):
     testplan = TestPlan.objects.get(id = tp_id)
     execution_task = ExecutionTask.objects.get(id = et_id)
     execution_history = execution_task.executionhistory_set.all()
     
-    return render_to_response('task_testcases.html', {'testplan': testplan,'execution_task': execution_task, 'execution_history':execution_history, 'active':'active'})
+    return render_to_response('task_testcases.html', {'testplan': testplan,'execution_task': execution_task, 'execution_history':execution_history, 'active':'active'}, context_instance=RequestContext(request))
+    
+    
+@csrf_exempt
+def execute_tc(request,tp_id, et_id):
+    
+    #execution_history = ExecutionHistory.objects.get(id=eh_id)
+    #print request.POST.get('json_data')
+    json_obj = json.loads(request.POST.get('json_data'))
+    
+    for obj in json_obj:
+        
+        execution_history = ExecutionHistory.objects.get(id=obj['eh_id'])
+        execution_history.result = obj['eh_result']
+        
+        if obj['eh_result'] == 'PASS':
+            execution_history.bugid = 0
+            execution_history.comment = ''
+        elif obj['eh_result'] == 'FAIL':
+            execution_history.bugid = obj['eh_bugid']
+            execution_history.comment = obj['comment']
+        elif obj['eh_result'] == 'NAp':
+            execution_history.comment = obj['comment']
+        else:
+            execution_history.comment = obj['comment']
+            
+        execution_history.executed_by = request.user
+        execution_history.save()
+        
+    # Calculate execution task status.
+    execution_task = ExecutionTask.objects.get(id=et_id)
+        
+    total_tc = execution_task.executionhistory_set.count()
+    passed_tc = execution_task.passed()
+    failed_tc = execution_task.failed()
+    nap_tc = execution_task.nap()
+     
+    execution_status = ( (passed_tc + failed_tc + nap_tc)/total_tc ) * 100
+      
+    execution_task.status = execution_status
+        
+    execution_task.save()
+    
+    # Calculate testplan status.
+    testplan = TestPlan.objects.get(id=tp_id)
+    
+        
+    return HttpResponse("done")
+
+@login_required
+@csrf_exempt
+def add_comment(request,tp_id, et_id):
+    
+    json_obj = json.loads(request.POST.get('json_data'))
+    
+    for obj in json_obj:
+        
+        execution_history = ExecutionHistory.objects.get(id=obj['eh_id'])
+        execution_history.comment = obj['comment']
+        execution_history.save()
+        
+        
+    return HttpResponse("done")
+
+@login_required
+@csrf_exempt
+def get_execution_history(request):
+    
+    testcase_id = request.POST.get('tc_id')
+    print testcase_id
+    testcase = TestCase.objects.get(id=testcase_id)
+    json_obj = []
+    try:
+        execution_histories = ExecutionHistory.objects.filter(testcase=testcase_id, result__in=['PASS', 'FAIL', 'NAp']).order_by('-modified_date')[:5]
+     
+        print execution_histories.count()
+        
+        for execution_history in execution_histories:
+            
+            json_obj.append({'testplan':execution_history.execution.title,
+                             'execution_task':execution_history.execution.testplan.title,
+                             'result': execution_history.result,
+                             'build':execution_history.execution.testplan.build.version,
+                             'bugid': execution_history.bugid,
+                             'comment': execution_history.comment,
+                             'executed_by': execution_history.executed_by.username,
+                             'last_modified_date':str(execution_history.modified_date)})
+            print json_obj
+            
+    except Exception, err:
+        print Exception, err
+        pass
+    
+    return HttpResponse(json.dumps(json_obj, indent=4))
+
+
+def get_testplan_status(tp_id):
+    
+    testplan = TestPlan.objects.get(id=tp_id)
+    
+    total_tc = 0
+    
+    n_ex = 0
+    
+    for execution_task in testplan.executiontask_set.all():
+        exec_task_total = execution_task.total()
+        total_tc = total_tc + exec_task_total
+        
+        n_ex = n_ex + execution_task.not_ex()
+        
+    
+    execution_status = ((total_tc - n_ex) / total_tc) * 100
+    
+    return round(execution_status)
+
+
+    
+    
+    
+    
     
     
     

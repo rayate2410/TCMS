@@ -1,3 +1,4 @@
+from __future__ import division
 from django.db import models as django_models
 from project import models as project_models
 from testcase import models as tc_models
@@ -15,6 +16,10 @@ class TestPlan(django_models.Model):
     started_by = django_models.ForeignKey(User)
     
     
+        
+    
+    
+    
 class ExecutionTask(django_models.Model):
     testplan = django_models.ForeignKey(TestPlan)
     category = django_models.ForeignKey(project_models.Category)
@@ -30,6 +35,9 @@ class ExecutionTask(django_models.Model):
     def __unicode__(self):
         return self.title
     
+    def total(self):
+        return self.executionhistory_set.count()
+    
     def passed(self):
         return self.executionhistory_set.filter(result = 'PASS').count()
     
@@ -38,7 +46,9 @@ class ExecutionTask(django_models.Model):
     
     def nap(self):
         return self.executionhistory_set.filter(result = 'NAp').count()
-    
+ 
+    def not_ex(self):
+        return self.executionhistory_set.filter(result = 'NE').count()
 
 '''
 class Execution(django_models.Model):

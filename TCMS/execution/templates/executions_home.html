@@ -41,7 +41,7 @@
    
    <div class="panel panel-default">
   <!-- Default panel contents -->
-  <div class="panel-heading">Current test plans: <b>{{ executions.count }}</b></div>
+  <div class="panel-heading">Current test plans: <b>{{ testplans.count }}</b></div>
   <div class="panel-body">
    
   
@@ -49,24 +49,27 @@
   <!-- List group -->
   <ul class="list-group">
   
-{% for test_plan in testplans %}
-   <p><li class="list-group-item"><h3><a href="/execution/get/{{ test_plan.id }}/">{{test_plan.title}}</a></p></h3>   
-   <h4>Started On: {{test_plan.start_date}}</h4>
-   
+
+{% for item in dict_obj %}
+   <p><li class="list-group-item"><h3><a href="/execution/get/{{ item.testplan.id }}/">{{item.testplan.title}}</a></p></h3>   
+   <h4>Started On: {{item.testplan.start_date}} </h4>
+
    <div class="progress">
-  <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="{{ execution.status }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ execution.status }}%">
-    Overall Progress: {{ execution.status }}%
+  <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="{{ item.status }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ item.status }}%">
+    Overall Progress: {{ item.status }}%
   </div>
 	</div>
     
     </li>
-    
-{% endfor %} 
+
    </ul>
 </div>	
 </div>
+{% if user.groups.all.0.name == "qa_lead" %}
 <a class="btn btn-primary" href="/execution/start/" role="button">Create New Test Plan</a>
+{%endif%}
 
+{%endfor%}
 
                     
 {% endblock %}

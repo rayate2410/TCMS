@@ -41,7 +41,6 @@ INSTALLED_APPS = (
     'testcase',
     'execution',
     'south',
-    'batchimport',
 )
 
 MIDDLEWARE_CLASSES = (
