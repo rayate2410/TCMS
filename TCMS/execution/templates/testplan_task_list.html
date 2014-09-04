@@ -71,8 +71,8 @@
                                             <td>{{execution_task.allocated_to}}</td>
                                             <td><a href="/execution/get/{{testplan.id}}/task/{{execution_task.id}}/">{{execution_task.title}}</a></td>
                                             <td>
-                                                <div class="progress xs progress-striped active">
-                                                    <div class="progress-bar progress-bar-success" style="width: %"></div>
+                                               <div class="progress xs progress-striped">
+                                                    <div class="progress-bar progress-bar-success" style="width: {{execution_task.status}}%"></div>
                                                 </div>
                                             </td>
                                             <td><span class="badge bg-green">{{execution_task.status}}%</span></td>
@@ -86,18 +86,17 @@
                                                 <td>{{execution_task.allocated_to}}</td>
                                                 <td><a href="/execution/get/{{testplan.id}}/task/{{execution_task.id}}/">{{execution_task.title}}</a></td>
                                                 <td>
-                                                    <div class="progress xs progress-striped active">
-                                                        <div class="progress-bar progress-bar-success" style="width: {{execution_task.status}}%"></div>
-                                                    </div>
-                                                </td>
-                                                <td><span class="badge bg-green">{{ status}}%</span></td>
+                                                    <div class="progress xs progress-striped">
+                                                    <div class="progress-bar progress-bar-success" style="width: {{execution_task.status}}%"></div>
+                                                </div>
+                                                <td><span class="badge bg-red">{{execution_task.status}}%</span></td>
                                             </tr>
                                             {% endif %}
                                         {%endfor%}
 
                                     {%endif%}
                                     </tbody></table>
-                                </div><!-- /.box-body -->
+                                </div>
                             </div>
 
   
