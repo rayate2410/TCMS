@@ -21,5 +21,6 @@ urlpatterns = patterns('',
     url(r'^executionhistory/$', exec_views.get_execution_history),
     url(r'^testplan_status/$', exec_views.get_testplan_status),
     
+    url(r'^exporttohtml/$', exec_views.report_view),
     
 )

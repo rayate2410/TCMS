@@ -7,7 +7,6 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from testcase.models import TestCase, TestcaseHistory
 from django.template import RequestContext
-
 import time
 from testcase.models import TestCase
 
@@ -15,7 +14,12 @@ from django.http.response import HttpResponse
 from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 
+
+
+import datetime
+
 import json
+import commands
 
 
 # Create your views here.
@@ -342,6 +346,67 @@ def get_testplan_status(tp_id):
     
     
     
+  
+def report_view(request):
+    testplan = TestPlan.objects.get(id=request.GET.get('tp_id'))
+    execution_tasks = testplan.executiontask_set.all()
+    execution_task = ExecutionTask.objects.get(id = 1)
     
+    total_tc = 0;
+    passed_tc = 0;
+    failed_tc = 0;
+    nap_tc = 0;
+    ne_tc = 0;
+    
+    for execution_task in testplan.executiontask_set.all():
+        total_tc = total_tc + execution_task.total()
+        passed_tc = passed_tc + execution_task.passed()
+        failed_tc = failed_tc + execution_task.failed()
+        nap_tc = nap_tc + execution_task.nap()
+        ne_tc = ne_tc + execution_task.not_ex()
+        
+    passed_per = round(((passed_tc/total_tc)*100),2)
+    failed_per = round(((failed_tc/total_tc)*100),2)
+    nap_per = round(((nap_tc/total_tc)*100),2)
+    ne_per = round(((ne_tc/total_tc)*100),2)
+    
+    
+    
+    #categories =  execution.executionhistory_set.values('testcase__category__name').distinct()
+    
+    response_html = render_to_response('generated_report.html', {'testplan': testplan,'status':get_testplan_status(testplan.id),
+                                       'total_tc': total_tc,
+                                       'passed_tc': passed_tc,
+                                       'failed_tc': failed_tc,
+                                       'nap_tc': nap_tc,
+                                       'ne_tc': ne_tc,
+                                       'passed_per': passed_per,
+                                       'failed_per': failed_per,
+                                       'nap_per': nap_per,
+                                       'ne_per': ne_per},
+                                       context_instance=RequestContext(request))
+    #with open('/tmp/response.html', 'w') as html_file:
+    #    html_file.write(str(response_html))
+        
+    #print response_html
+    
+    #ret = commands.getoutput('wkhtmltopdf --enable-javascript --javascript-delay 5000 --page-size A3 /tmp/response.html /tmp/response.pdf')
+    #ret = commands.getoutput('mv /tmp/response.pdf .')
+    
+    #response = HttpResponse(content_type='application/pdf')
+    #response['Content-Disposition'] = 'attachment; filename="response.pdf"'
+    '''
+    response = HttpResponse()
+    response['Content-Type'] = ''
+    response['X-Sendfile'] = "/static/response.pdf"
+    '''
+    
+    
+    response = response_html
+    return response
+
+
+
+
     
 

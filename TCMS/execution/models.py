@@ -15,6 +15,33 @@ class TestPlan(django_models.Model):
     start_date = django_models.DateTimeField("Date", auto_now_add=True)
     started_by = django_models.ForeignKey(User)
     
+    def get_categories(self):
+        category_data = []
+        
+        
+        categories = self.executiontask_set.values('category').distinct()
+        
+        
+        for c in categories:
+            category = project_models.Category.objects.get(id=c['category'])
+            total_tc = ExecutionHistory.objects.filter(testcase__category = category).count()
+            passed_tc = ExecutionHistory.objects.filter(testcase__category = category).filter(result="PASS").count()
+            failed_tc = ExecutionHistory.objects.filter(testcase__category = category).filter(result="FAIL").count()
+            nap_tc = ExecutionHistory.objects.filter(testcase__category = category).filter(result="NAp").count()
+            ne_tc = ExecutionHistory.objects.filter(testcase__category = category).filter(result="NE").count()
+            
+            failed_testcases = ExecutionHistory.objects.filter(testcase__category = category).filter(result="FAIL")
+            category_data.append({"category_name": category.name,
+                                 "total_tc": total_tc, 
+                                 "passed_tc": passed_tc,
+                                 "failed_tc": failed_tc,
+                                 "nap_tc": nap_tc,
+                                 "ne_tc": ne_tc,
+                                 "failed_testcases":failed_testcases})
+            
+        
+        
+        return category_data
     
         
     

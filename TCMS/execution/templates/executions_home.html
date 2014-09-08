@@ -51,7 +51,7 @@
   
 
 {% for item in dict_obj %}
-   <p><li class="list-group-item"><h3><a href="/execution/get/{{ item.testplan.id }}/">{{item.testplan.title}}</a></p></h3>   
+   <p><li class="list-group-item"><h3><a href="/execution/get/{{ item.testplan.id }}/">{{item.testplan.title}}</a><a class="btn btn-primary pull-right noprint" role="button" href="/execution/exporttohtml/?tp_id={{item.testplan.id}}">Report</a></p></h3>
    <h4>Started On: {{item.testplan.start_date}} </h4>
 
    <div class="progress">
