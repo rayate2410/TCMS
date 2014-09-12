@@ -5,6 +5,12 @@ from django.core.context_processors import csrf
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.template import RequestContext
+from project.models import *
+from execution.models import *
+from testcase.models import *
+from datetime import timedelta
+from django.utils import timezone
+
 
 
 def index(request):
@@ -18,8 +24,26 @@ def index(request):
 def home(request):
     c = {}
     c.update(csrf(request))
+    
+    current_user = request.user
+    tasks_allocated = ExecutionTask.objects.filter(allocated_to = current_user).count()
+    c['task_allocated'] = tasks_allocated
+    
+    some_day_last_week = timezone.now().date() - timedelta(days=7)
+    testcases_executed_last_week = ExecutionHistory.objects.filter(executed_by = current_user).filter(result__in=['PASS','FAIL','NAp']).filter(modified_date__range=[some_day_last_week, timezone.now().date()]).count()
+    c['testcases_executed_last_week'] = testcases_executed_last_week
+    
+    testcases_passed_last_week = ExecutionHistory.objects.filter(executed_by = current_user).filter(result__in=['PASS']).filter(modified_date__range=[some_day_last_week, timezone.now().date()]).count()
+    c['testcases_passed_last_week'] = testcases_passed_last_week
+    
+    testcases_failed_last_week = ExecutionHistory.objects.filter(executed_by = current_user).filter(result__in=['FAIL']).filter(modified_date__range=[some_day_last_week, timezone.now().date()]).count()
+    c['testcases_failed_last_week'] = testcases_failed_last_week
+    
+    execution_tasks = ExecutionTask.objects.filter(allocated_to = current_user)
+    c['execution_tasks'] = execution_tasks
+    
     return render_to_response('dashboard.html',c,context_instance=RequestContext(request))
-
+    
 def login(request):
     c = {}
     c.update(csrf(request))
